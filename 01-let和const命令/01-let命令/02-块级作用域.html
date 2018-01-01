@@ -7,6 +7,82 @@
 <body>
 
 <script type="text/javascript">
+    /*
+        为什么需要块级作用域
+        ES5只有全局作用域和函数作用域，没有块级作用域，这带来很多不合理场景。
+    */
+    /*
+        第一种场景，内层变量可能会覆盖外层变量
+        if代码块的外部使用外层的tmp变量，内部使用内层的tmp变量。
+        但是，函数func()执行后，输出为undefined，原因在于，变量提升后，
+        导致内层tmp覆盖了外层tmp变量
+    */
+    console.log('---不合理场景---');
+    var tmp = new Date();
+    function func() {
+        console.log(tmp);
+        if (false) {
+            var tmp = 'hello world';
+        }
+    }
+
+    func(); // undefined
+
+    /*
+        第二种场景，用来计数的循环变量泄露为全局变量
+        变量i只用来控制循环，但循环结束后，其并未消失，泄露成了全局变量
+    */
+    var s = 'length';
+    for (var i = 0; i < s.length; i++) {
+        console.log(s[i]);
+    }
+
+    console.log(i);
+
+    /* ------------------------------------------------------------------------ */
+    console.log('---ES6的块级作用域---');
+    // let实际上为JavaScript新增的块级作用域
+    /*
+        函数有两个代码块，都声明了变量n，运行后输出5。
+        这表示外层代码块不受内层代码块影响。若两次都是用
+        var定义变量n，最后输出才是10
+    */
+    function func_a() {
+        let n = 5;
+        if (true) {
+            let n = 10;
+        }
+        console.log(n); // 5
+    }
+    func_a();
+    /*
+        ES6允许块级作用域的任意嵌套。
+        外层作用域无法读取内层作用域的变量
+    */
+    {{{{{let insane = "hello world";}}}}}
+    /*
+     内层作用域可以定义与外层作用域同名的变量
+    */
+    {{{{
+        let insane = 'hello world';
+        {
+            let insane = 'hello world';
+        }
+    }}}}
+    /*
+        块级作用域的出现，使得获得广泛应用的立即执行函数表达式(IIFE)不再必要
+    */
+    // IIFE写法
+    (function() {
+        var tmp = '';
+    }());
+    // 块及作用域写法
+    {
+        let tmp = '';
+    }
+
+    /* ------------------------------------------------------------------------ */
+    console.log('---块级作用域与函数声明---');
     
 </script>
 </body>
